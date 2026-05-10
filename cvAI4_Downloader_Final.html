@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cvAI4 - Multi Downloader 👾</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        body {
+            background: #0d1117;
+            font-family: 'JetBrains Mono', monospace;
+            color: #c9d1d9;
+        }
+        .glass {
+            background: rgba(22, 27, 34, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid #30363d;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(88, 166, 255, 0.4);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #58a6ff, #bc8cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="glass p-8 rounded-3xl w-full max-w-lg transition-all duration-500 hover:neon-glow">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-extrabold gradient-text mb-2 tracking-tighter">cvAI4 DOWNLOADER</h1>
+            <p class="text-xs text-gray-500 uppercase tracking-widest">Subang Engine v1.0 - Unbound</p>
+        </div>
+
+        <div class="space-y-6">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fa-brands fa-tiktok text-gray-500"></i>
+                </div>
+                <input type="text" id="targetUrl" placeholder="Masukkan link TikTok atau Instagram..." 
+                    class="block w-full pl-10 pr-3 py-4 bg-[#161b22] border border-[#30363d] rounded-xl focus:outline-none focus:border-[#58a6ff] focus:ring-1 focus:ring-[#58a6ff] transition-all text-sm">
+            </div>
+
+            <button onclick="startProcessing()" id="btnAction"
+                class="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-bold py-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
+                EXTRACT MEDIA
+            </button>
+        </div>
+
+        <div id="statusArea" class="mt-8 hidden space-y-4">
+            <div id="loader" class="flex flex-col items-center gap-2">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#58a6ff]"></div>
+                <p class="text-xs text-blue-400">Menghubungkan ke Railway Engine...</p>
+            </div>
+            
+            <div id="resultContainer" class="hidden p-4 bg-[#0d1117] rounded-xl border border-[#30363d]">
+                <p id="videoTitle" class="text-xs mb-3 text-gray-400 truncate font-bold"></p>
+                <a id="downloadLink" href="#" target="_blank"
+                    class="block text-center w-full bg-[#58a6ff] hover:bg-[#1f6feb] text-white text-sm font-bold py-3 rounded-lg transition-all">
+                    SIMPAN VIDEO SEKARANG
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-10 pt-6 border-t border-[#30363d] text-center">
+            <p class="text-[10px] text-gray-600">
+                Authorized by <span class="text-gray-400">Gigs/Xyren</span> | wildanfaisramdani2097-cpu
+            </p>
+        </div>
+    </div>
+
+    <script>
+        async function startProcessing() {
+            const urlInput = document.getElementById('targetUrl').value;
+            const btn = document.getElementById('btnAction');
+            const statusArea = document.getElementById('statusArea');
+            const loader = document.getElementById('loader');
+            const resultContainer = document.getElementById('resultContainer');
+            
+            if (!urlInput) return alert("Tuan, masukkan link-nya dulu!");
+
+            // API ENDPOINT RAILWAY TUAN
+            const apiBase = "https://cvai4-downloader-production.up.railway.app/api/download";
+
+            // Visual Reset
+            statusArea.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            try {
+                const response = await fetch(`${apiBase}?url=${encodeURIComponent(urlInput)}`);
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    loader.classList.add('hidden');
+                    resultContainer.classList.remove('hidden');
+                    
+                    document.getElementById('videoTitle').innerText = data.title || "Video Berhasil Diambil";
+                    document.getElementById('downloadLink').href = data.download_url;
+                } else {
+                    throw new Error("API Failure");
+                }
+            } catch (err) {
+                alert("Gagal Terhubung! Pastikan Server Railway Tuan Aktif.");
+                statusArea.classList.add('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
+        }
+    </script>
+</body>
+</html>
